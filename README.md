@@ -1,4 +1,4 @@
-# Whatssapp_message
+# Whatssapp_messages
 
 This is a little program for manager who use Whatssapp.
 
