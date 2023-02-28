@@ -1,4 +1,4 @@
-# Whatssapp_messages
+# WhatsApp_Manager
 
 This is a little program for manager who use Whatssapp.
 
