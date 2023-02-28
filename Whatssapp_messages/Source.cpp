@@ -4,6 +4,9 @@
 #include <conio.h>
 #include <windows.h>
 #include <tchar.h>
+#include <stdio.h>
+#include <tchar.h>
+#include <psapi.h>
 
 #define MYWM_NOTIFYICON (WM_APP+100)
 
@@ -99,43 +102,92 @@ LRESULT CALLBACK WndProc(HWND window, UINT message, WPARAM wParam, LPARAM lParam
     return 0;
 }
 
-// Главная функция
-int APIENTRY _tWinMain(HINSTANCE instance, HINSTANCE, LPTSTR, int) {
+//Проверка на существование процесса
+bool isProcessRunning(const wstring& processName) {
+    int amountProc = 0;
+    // Get the list of process IDs
+    DWORD processIds[1024], bytesReturned;
+    if (!EnumProcesses(processIds, sizeof(processIds), &bytesReturned))
+    {
+        return false;
+    }
 
-    // Регистрация класса окна
-    WNDCLASSEX main = { 0 };
-    main.cbSize = sizeof(WNDCLASSEX);
-    main.hInstance = instance;
-    main.lpszClassName = TEXT("Main");
-    main.lpfnWndProc = WndProc;
-    RegisterClassEx(&main);
+    // Calculate the number of processes
+    DWORD processCount = bytesReturned / sizeof(DWORD);
 
-    // Создание главного окна
-    HWND window = CreateWindowEx(0, TEXT("Main"), NULL, 0, 0, 0, 0, 0, NULL, NULL, instance, NULL);
-
-    // Создание иконки
-    NOTIFYICONDATA nid = {};
-    nid.cbSize = sizeof(nid);
-    nid.hWnd = window;
-    nid.uFlags = NIF_ICON | NIF_TIP | NIF_MESSAGE;
-    nid.hIcon = (HICON)LoadImage(NULL, L"favicon.ico", IMAGE_ICON, 0, 0, LR_LOADFROMFILE | LR_SHARED);
-    nid.uCallbackMessage = WM_USER;
-    memcpy(nid.szTip, L"WhatsApp \nManager", 128);
-    Shell_NotifyIcon(NIM_ADD, &nid);
-
-    MSG message;
-    while (GetMessage(&message, NULL, 0, 0)) {
-        TranslateMessage(&message);
-        DispatchMessage(&message);
-
-        //Работа с сочитанием клавиш
-        if (message.message == WM_HOTKEY) {
-            if (message.wParam == 0x00F) {
-                hotKey();
+    // Iterate through the list of processes and check their names
+    for (DWORD i = 0; i < processCount; i++)
+    {
+        HANDLE hProcess = OpenProcess(PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, FALSE, processIds[i]);
+        if (hProcess != nullptr)
+        {
+            // Get the process name
+            wchar_t processNameBuffer[MAX_PATH];
+            if (GetModuleFileNameExW(hProcess, nullptr, processNameBuffer, MAX_PATH) > 0)
+            {
+                std::wstring processNameString(processNameBuffer);
+                if (processNameString.find(processName) != std::string::npos)
+                {
+                    amountProc++;
+                    if(amountProc >= 2){
+                        // The process with the given name is running
+                        CloseHandle(hProcess);
+                        return true;
+                    }
+                }
             }
+
+            CloseHandle(hProcess);
         }
     }
 
-    Shell_NotifyIcon(NIM_DELETE, &nid); // Удаление иконки
+    // The process with the given name is not running
+    return false;
+}
+
+// Главная функция
+int APIENTRY _tWinMain(HINSTANCE instance, HINSTANCE, LPTSTR, int) {
+
+    if (isProcessRunning(L"WhatsApp_Manager")){
+        MessageBox(NULL, L"Программа уже запущена!", L"Error", MB_ICONINFORMATION);
+        return 1;
+    }
+    else{
+        // Регистрация класса окна
+        WNDCLASSEX main = { 0 };
+        main.cbSize = sizeof(WNDCLASSEX);
+        main.hInstance = instance;
+        main.lpszClassName = TEXT("Main");
+        main.lpfnWndProc = WndProc;
+        RegisterClassEx(&main);
+
+        // Создание главного окна
+        HWND window = CreateWindowEx(0, TEXT("Main"), NULL, 0, 0, 0, 0, 0, NULL, NULL, instance, NULL);
+
+        // Создание иконки
+        NOTIFYICONDATA nid = {};
+        nid.cbSize = sizeof(nid);
+        nid.hWnd = window;
+        nid.uFlags = NIF_ICON | NIF_TIP | NIF_MESSAGE;
+        nid.hIcon = (HICON)LoadImage(NULL, L"favicon.ico", IMAGE_ICON, 0, 0, LR_LOADFROMFILE | LR_SHARED);
+        nid.uCallbackMessage = WM_USER;
+        memcpy(nid.szTip, L"WhatsApp \nManager", 128);
+        Shell_NotifyIcon(NIM_ADD, &nid);
+
+        MSG message;
+        while (GetMessage(&message, NULL, 0, 0)) {
+            TranslateMessage(&message);
+            DispatchMessage(&message);
+
+            //Работа с сочитанием клавиш
+            if (message.message == WM_HOTKEY) {
+                if (message.wParam == 0x00F) {
+                    hotKey();
+                }
+            }
+        }
+
+        Shell_NotifyIcon(NIM_DELETE, &nid); // Удаление иконки
+    }
     return 0;
 }
