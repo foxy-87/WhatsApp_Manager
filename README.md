@@ -3,7 +3,8 @@
 This is a little program for manager who use Whatssapp.
 
 ## How to download
-  Open folder "x64" and download "Release"
+  If if you have a 64 bit system. Open folder "x64" and download "Release"
+  If if you have a 32 bit system. Open folder "x86" and download "Release"
 
 ## How to use
   1. After launching this program, you need to highlight the phone number
