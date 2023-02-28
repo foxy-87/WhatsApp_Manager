@@ -87,7 +87,7 @@ LRESULT CALLBACK WndProc(HWND window, UINT message, WPARAM wParam, LPARAM lParam
     switch (message) {
     case WM_USER:
         if (lParam == WM_RBUTTONDOWN)
-            if (MessageBox(NULL, L"Завершить работу?", L"Whatsapp messages", MB_YESNO) == IDYES)
+            if (MessageBox(NULL, L"Завершить работу?", L"WhatsApp Manager", MB_YESNO) == IDYES)
                 DestroyWindow(window);
         break;
     case WM_DESTROY:
@@ -120,7 +120,7 @@ int APIENTRY _tWinMain(HINSTANCE instance, HINSTANCE, LPTSTR, int) {
     nid.uFlags = NIF_ICON | NIF_TIP | NIF_MESSAGE;
     nid.hIcon = (HICON)LoadImage(NULL, L"favicon.ico", IMAGE_ICON, 0, 0, LR_LOADFROMFILE | LR_SHARED);
     nid.uCallbackMessage = WM_USER;
-    memcpy(nid.szTip, L"Whatssapp \nmessage", 128);
+    memcpy(nid.szTip, L"WhatsApp \nManager", 128);
     Shell_NotifyIcon(NIM_ADD, &nid);
 
     MSG message;

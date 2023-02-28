@@ -24,6 +24,7 @@
     <ProjectGuid>{5737b181-8a97-42a3-ac4e-d94ef9e706c2}</ProjectGuid>
     <RootNamespace>Whatssappmessages</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <ProjectName>WhatsApp_Manager</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
