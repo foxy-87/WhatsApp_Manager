@@ -1,6 +1,6 @@
 # WhatsApp_Manager
 
-This is a little program for manager who use Whatssapp.
+This is a little program for manager who use WhatsApp.
 
 ## How to download
   * If you have a 64 bit system. Open folder "x64" and download "Setup1.msi"
